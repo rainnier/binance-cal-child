@@ -1,0 +1,59 @@
+<mwl-demo-utils-calendar-header
+  [(view)]="view"
+  [(viewDate)]="viewDate"
+  (viewDateChange)="fetchEvents()"
+  (viewChange)="fetchEvents()"
+>
+</mwl-demo-utils-calendar-header>
+
+<ng-template #loading>
+  <div class="text-center">
+    <i class="fas fa-spin fa-spinner fa-5x"></i> <br />
+    Loading events...
+  </div>
+</ng-template>
+
+<ng-template #myTotal>
+  <span class="cal-day-badge ng-star-inserted"></span>
+</ng-template>
+
+<ng-template #test>
+        <mwly-calendar-month-cell
+          [totalAmount]="totalAmount"
+        ></mwly-calendar-month-cell>
+</ng-template>
+
+<div *ngIf="events$ | async; else loading; let events">
+  <div #totalDiv>Monthly USDT Total: {{monthlyTotal}}</div>
+  <div #totalDiv>Day USDT Total: {{totalAmount}}</div>
+  <div #totalDiv>Monthly AXS Flexi Total: {{monthlyAxsFlexiTotal}}</div>
+  <div #totalDiv>Day USDT Total: {{totalAxsFlexiAmount}}</div>
+  <div #totalDiv>Monthly AXS90 Total: {{monthlyAxs90Total}}</div>
+  <div #totalDiv>Day AXS90 Total: {{totalAxs90Amount}}</div>
+  
+  <div [ngSwitch]="view">
+    <mwl-calendar-month-view
+      *ngSwitchCase="'month'"
+      [viewDate]="viewDate"
+      [events]="events"
+      [activeDayIsOpen]="activeDayIsOpen"
+      (dayClicked)="dayClicked($event.day)"
+      (eventClicked)="eventClicked($event.event)"
+    >
+    </mwl-calendar-month-view>
+    <mwl-calendar-week-view
+      *ngSwitchCase="'week'"
+      [viewDate]="viewDate"
+      [events]="events"
+      (eventClicked)="eventClicked($event.event)"
+    >
+    </mwl-calendar-week-view>
+    <mwl-calendar-day-view
+      *ngSwitchCase="'day'"
+      [viewDate]="viewDate"
+      [events]="events"
+      (eventClicked)="eventClicked($event.event)"
+    >
+    </mwl-calendar-day-view>
+  </div>
+</div>
