@@ -53,11 +53,13 @@ export class DemoComponent implements OnInit, AfterViewInit {
   view: CalendarView = CalendarView.Month;
 
   totalAmount:any = ''
-  monthlyTotal = 0
+  monthlyTotal:any = {}
+  
   totalAxsFlexiAmount:any = ''
-  monthlyAxsFlexiTotal = 0
+  monthlyAxsFlexiTotal:any = {}
+
   totalAxs90Amount:any = ''
-  monthlyAxs90Total = 0
+  monthlyAxs90Total:any = {}
   viewDate: Date = new Date();
 
   events$: Observable<CalendarEvent<{ txn: Txn }>[]> = new Observable<CalendarEvent<{ txn: Txn }>[]>();
@@ -93,15 +95,21 @@ export class DemoComponent implements OnInit, AfterViewInit {
       .get<Txn[]>('http://localhost:8080/api/v1/txn')
       .pipe(
         map((results: Txn[]) => {
-          this.monthlyTotal = 0
-          this.monthlyAxsFlexiTotal = 0
-          this.monthlyAxs90Total = 0
-          console.log(results)
-          return results.map((txn: Txn) => {
-            console.log(new Date(txn.txnDate).toLocaleDateString())
-            this.monthlyTotal += txn.txnType === 'SAVEUSDT' ? txn.txnAmount : 0
-            this.monthlyAxsFlexiTotal += txn.txnType === 'AXSFLEXIEARN' ? txn.txnAmount : 0
-            this.monthlyAxs90Total += txn.txnType === 'AXSSTAKE90' ? txn.txnAmount : 0
+          let monthTag = ''+this.viewDate.getMonth()+'-'+this.viewDate.getFullYear()
+          this.monthlyTotal[monthTag] = 0
+
+          this.monthlyAxsFlexiTotal[monthTag] = 0
+          this.monthlyAxs90Total[monthTag] = 0
+          console.log(this.viewDate.getMonth())
+          console.log(this.viewDate.getFullYear())
+          return results.filter((tx:Txn) => new Date(tx.txnDate).getMonth() === this.viewDate.getMonth() 
+            && new Date(tx.txnDate).getFullYear() === this.viewDate.getFullYear())
+          .map((txn: Txn) => {
+            console.log(new Date(txn.txnDate).getFullYear())
+            //this.monthlyTotal['ac'] = txn.txnType === 'SAVEUSDT' ? txn.txnAmount : 0
+            this.monthlyTotal[monthTag] += txn.txnType === 'SAVEUSDT' ? txn.txnAmount : 0
+            this.monthlyAxsFlexiTotal[monthTag] += txn.txnType === 'AXSFLEXIEARN' ? txn.txnAmount : 0
+            this.monthlyAxs90Total[monthTag] += txn.txnType === 'AXSSTAKE90' ? txn.txnAmount : 0
             return {
               title: `${txn.txnAmount.toFixed(8)}: ${new Date(txn.txnDate).toLocaleString()}`,
               //txnType: txn.txnType,
@@ -117,6 +125,9 @@ export class DemoComponent implements OnInit, AfterViewInit {
           });
         })
       );
+      this.totalAmount = ''
+      this.totalAxsFlexiAmount = ''
+      this.totalAxs90Amount = ''
   }
 
   dayClicked({
@@ -137,8 +148,8 @@ export class DemoComponent implements OnInit, AfterViewInit {
       return accumulator + (object.meta?.txn.txnType === 'AXSFLEXIEARN' ? (object.meta?.txn.txnAmount ?? 0) : 0)
     }, 0)
 
+    
     this.totalAxsFlexiAmount = sum
-
     sum = events.reduce((accumulator, object) => {
       return accumulator + (object.meta?.txn.txnType === 'AXSSTAKE90' ? (object.meta?.txn.txnAmount ?? 0) : 0)
     }, 0)

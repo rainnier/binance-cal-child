@@ -24,11 +24,11 @@
 </ng-template>
 
 <div *ngIf="events$ | async; else loading; let events">
-  <div #totalDiv>Monthly USDT Total: {{monthlyTotal}}</div>
-  <div #totalDiv>Day USDT Total: {{totalAmount}}</div>
-  <div #totalDiv>Monthly AXS Flexi Total: {{monthlyAxsFlexiTotal}}</div>
-  <div #totalDiv>Day USDT Total: {{totalAxsFlexiAmount}}</div>
-  <div #totalDiv>Monthly AXS90 Total: {{monthlyAxs90Total}}</div>
+  <div #totalDiv>Monthly USDT Total: {{monthlyTotal[''+viewDate.getMonth()+'-'+viewDate.getFullYear()]}}</div>
+  <div #totalDiv>Day USDT Total: {{totalAmount}}</div><br>
+  <div #totalDiv>Monthly AXS Flexi Total: {{monthlyAxsFlexiTotal[''+viewDate.getMonth()+'-'+viewDate.getFullYear()]}}</div>
+  <div #totalDiv>Day AXS Flexi Total: {{totalAxsFlexiAmount}}</div><br/>
+  <div #totalDiv>Monthly AXS90 Total: {{monthlyAxs90Total[''+viewDate.getMonth()+'-'+viewDate.getFullYear()]}}</div>
   <div #totalDiv>Day AXS90 Total: {{totalAxs90Amount}}</div>
   
   <div [ngSwitch]="view">
