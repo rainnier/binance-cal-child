@@ -14,5 +14,13 @@ export const colors: any = {
     green: {
       primary: '#14b82f',
       secondary: '#b8ffc3',
+    },
+    pink: {
+      primary: '#fc0fad',
+      secondary: '#facaea',
+    },
+    gold: {
+      primary: '#d4af37',
+      secondary: '#fcebb1',
     }
   };
