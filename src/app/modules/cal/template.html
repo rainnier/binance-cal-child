@@ -18,35 +18,49 @@
 </ng-template>
 
 <ng-template #test>
-        <mwly-calendar-month-cell
-          [totalAmount]="totalAmount"
-        ></mwly-calendar-month-cell>
+  <mwly-calendar-month-cell
+    [totalAmount]="totalAmount"
+  ></mwly-calendar-month-cell>
 </ng-template>
 
 <div *ngIf="events$ | async; else loading; let events">
-
   <table>
     <thead>
       <tr>
-          <th scope="col">Time Span</th>
-          <th scope="col">USDT</th>
-          <th scope="col">BUSD</th>
-          <th scope="col">AXSFLEXI</th>
-          <th scope="col">AXS90</th>
-          <th scope="col">ETHFLEXI</th>
+        <th scope="col">Time Span</th>
+        <th scope="col">STABLE</th>
+        <th scope="col">USDT</th>
+        <th scope="col">BUSD</th>
+        <th scope="col">AXSFLEXI</th>
+        <th scope="col">AXS90</th>
+        <th scope="col">ETHFLEXI</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td scope="col">Monthly</td>
-        <td scope="col">{{monthlyTotal[''+viewDate.getMonth()+'-'+viewDate.getFullYear()]}}</td>
-        <td scope="col">{{monthlyBusdTotal[''+viewDate.getMonth()+'-'+viewDate.getFullYear()]}}</td>
-        <td scope="col">{{monthlyAxsFlexiTotal[''+viewDate.getMonth()+'-'+viewDate.getFullYear()]}}</td>
-        <td scope="col">{{monthlyAxs90Total[''+viewDate.getMonth()+'-'+viewDate.getFullYear()]}}</td>
-        <td scope="col">{{monthlyEthFlexiTotal[''+viewDate.getMonth()+'-'+viewDate.getFullYear()]}}</td>
+        <td scope="col">
+          {{monthlyStableTotal[''+viewDate.getMonth()+'-'+viewDate.getFullYear()]}}
+        </td>
+        <td scope="col">
+          {{monthlyTotal[''+viewDate.getMonth()+'-'+viewDate.getFullYear()]}}
+        </td>
+        <td scope="col">
+          {{monthlyBusdTotal[''+viewDate.getMonth()+'-'+viewDate.getFullYear()]}}
+        </td>
+        <td scope="col">
+          {{monthlyAxsFlexiTotal[''+viewDate.getMonth()+'-'+viewDate.getFullYear()]}}
+        </td>
+        <td scope="col">
+          {{monthlyAxs90Total[''+viewDate.getMonth()+'-'+viewDate.getFullYear()]}}
+        </td>
+        <td scope="col">
+          {{monthlyEthFlexiTotal[''+viewDate.getMonth()+'-'+viewDate.getFullYear()]}}
+        </td>
       </tr>
       <tr>
         <td scope="col">Daily</td>
+        <td scope="col">{{totalStableAmount}}</td>
         <td scope="col">{{totalAmount}}</td>
         <td scope="col">{{totalBusdAmount}}</td>
         <td scope="col">{{totalAxsFlexiAmount}}</td>

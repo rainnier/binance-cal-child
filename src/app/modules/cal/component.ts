@@ -52,21 +52,24 @@ function getTimezoneOffsetString(date: Date): string {
 export class DemoComponent implements OnInit, AfterViewInit {
   view: CalendarView = CalendarView.Month;
 
-  totalAmount:any = ''
-  monthlyTotal:any = {}
-  
-  totalAxsFlexiAmount:any = ''
-  monthlyAxsFlexiTotal:any = {}
+  totalStableAmount: any = ''
+  monthlyStableTotal: any = {}
 
-  totalAxs90Amount:any = ''
-  monthlyAxs90Total:any = {}
-  
-  totalBusdAmount:any = ''
-  monthlyBusdTotal:any = {}
-  
-  totalEthFlexiAmount:any = ''
-  monthlyEthFlexiTotal:any = {}
-  
+  totalAmount: any = ''
+  monthlyTotal: any = {}
+
+  totalAxsFlexiAmount: any = ''
+  monthlyAxsFlexiTotal: any = {}
+
+  totalAxs90Amount: any = ''
+  monthlyAxs90Total: any = {}
+
+  totalBusdAmount: any = ''
+  monthlyBusdTotal: any = {}
+
+  totalEthFlexiAmount: any = ''
+  monthlyEthFlexiTotal: any = {}
+
   viewDate: Date = new Date();
 
   events$: Observable<CalendarEvent<{ txn: Txn }>[]> = new Observable<CalendarEvent<{ txn: Txn }>[]>();
@@ -102,8 +105,9 @@ export class DemoComponent implements OnInit, AfterViewInit {
       .get<Txn[]>('http://localhost:8080/api/v1/txn')
       .pipe(
         map((results: Txn[]) => {
-          let monthTag = ''+this.viewDate.getMonth()+'-'+this.viewDate.getFullYear()
+          let monthTag = '' + this.viewDate.getMonth() + '-' + this.viewDate.getFullYear()
           this.monthlyTotal[monthTag] = 0
+          this.monthlyStableTotal[monthTag] = 0
           this.monthlyBusdTotal[monthTag] = 0
 
           this.monthlyAxsFlexiTotal[monthTag] = 0
@@ -111,39 +115,41 @@ export class DemoComponent implements OnInit, AfterViewInit {
           this.monthlyEthFlexiTotal[monthTag] = 0
           console.log(this.viewDate.getMonth())
           console.log(this.viewDate.getFullYear())
-          return results.filter((tx:Txn) => new Date(tx.txnDate).getMonth() === this.viewDate.getMonth() 
+          return results.filter((tx: Txn) => new Date(tx.txnDate).getMonth() === this.viewDate.getMonth()
             && new Date(tx.txnDate).getFullYear() === this.viewDate.getFullYear())
-          .map((txn: Txn) => {
-            console.log(new Date(txn.txnDate).getFullYear())
-            this.monthlyTotal[monthTag] += txn.txnType === 'SAVEUSDT' ? txn.txnAmount : 0
-            this.monthlyBusdTotal[monthTag] += txn.txnType === 'SAVEBUSD' ? txn.txnAmount : 0
-            this.monthlyAxsFlexiTotal[monthTag] += txn.txnType === 'AXSFLEXIEARN' ? txn.txnAmount : 0
-            this.monthlyAxs90Total[monthTag] += txn.txnType === 'AXSSTAKE90' ? txn.txnAmount : 0
-            this.monthlyEthFlexiTotal[monthTag] += txn.txnType === 'ETHFLEXIEARN' ? txn.txnAmount : 0
-            return {
-              title: `${txn.txnAmount.toFixed(8)}: ${new Date(txn.txnDate).toLocaleString()}`,
-              //txnType: txn.txnType,
-              start: new Date(
-                new Date(txn.txnDate).toLocaleDateString() //+ getTimezoneOffsetString(this.viewDate)
-              ),
-              color: txn.txnType === 'SAVEUSDT' ? colors.green
-                : (txn.txnType === 'AXSSTAKE90' ? colors.blue 
-                : txn.txnType === 'SAVEBUSD' ? colors.pink 
-                : txn.txnType === 'ETHFLEXIEARN' ? colors.gold 
-                : colors.yellow), // yellow for AXSFLEXIEARN
-              allDay: true,
-              meta: {
-                txn,
-              },
-            };
-          });
+            .map((txn: Txn) => {
+              console.log(new Date(txn.txnDate).getFullYear())
+              this.monthlyTotal[monthTag] += txn.txnType === 'SAVEUSDT' ? txn.txnAmount : 0
+              this.monthlyStableTotal[monthTag] += (txn.txnType === 'SAVEUSDT' || txn.txnType === 'SAVEBUSD') ? txn.txnAmount : 0
+              this.monthlyBusdTotal[monthTag] += txn.txnType === 'SAVEBUSD' ? txn.txnAmount : 0
+              this.monthlyAxsFlexiTotal[monthTag] += txn.txnType === 'AXSFLEXIEARN' ? txn.txnAmount : 0
+              this.monthlyAxs90Total[monthTag] += txn.txnType === 'AXSSTAKE90' ? txn.txnAmount : 0
+              this.monthlyEthFlexiTotal[monthTag] += txn.txnType === 'ETHFLEXIEARN' ? txn.txnAmount : 0
+              return {
+                title: `${txn.txnAmount.toFixed(8)}: ${new Date(txn.txnDate).toLocaleString()}`,
+                //txnType: txn.txnType,
+                start: new Date(
+                  new Date(txn.txnDate).toLocaleDateString() //+ getTimezoneOffsetString(this.viewDate)
+                ),
+                color: txn.txnType === 'SAVEUSDT' ? colors.green
+                  : (txn.txnType === 'AXSSTAKE90' ? colors.blue
+                    : txn.txnType === 'SAVEBUSD' ? colors.pink
+                      : txn.txnType === 'ETHFLEXIEARN' ? colors.gold
+                        : colors.yellow), // yellow for AXSFLEXIEARN
+                allDay: true,
+                meta: {
+                  txn,
+                },
+              };
+            });
         })
       );
-      this.totalAmount = ''
-      this.totalBusdAmount = ''
-      this.totalAxsFlexiAmount = ''
-      this.totalEthFlexiAmount = ''
-      this.totalAxs90Amount = ''
+    this.totalAmount = ''
+    this.totalStableAmount = ''
+    this.totalBusdAmount = ''
+    this.totalAxsFlexiAmount = ''
+    this.totalEthFlexiAmount = ''
+    this.totalAxs90Amount = ''
   }
 
   dayClicked({
@@ -160,10 +166,15 @@ export class DemoComponent implements OnInit, AfterViewInit {
     this.totalAmount = sum
 
     sum = events.reduce((accumulator, object) => {
+      return accumulator + ((object.meta?.txn.txnType === 'SAVEUSDT' || object.meta?.txn.txnType === 'SAVEBUSD') ? (object.meta?.txn.txnAmount ?? 0) : 0)
+    }, 0)
+    this.totalStableAmount = sum
+
+    sum = events.reduce((accumulator, object) => {
       return accumulator + (object.meta?.txn.txnType === 'SAVEBUSD' ? (object.meta?.txn.txnAmount ?? 0) : 0)
     }, 0)
     this.totalBusdAmount = sum
-    
+
     sum = events.reduce((accumulator, object) => {
       return accumulator + (object.meta?.txn.txnType === 'AXSFLEXIEARN' ? (object.meta?.txn.txnAmount ?? 0) : 0)
     }, 0)
